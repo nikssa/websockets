@@ -1,0 +1,212 @@
+.App {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: calc(100% - 4rem);
+  padding: 2rem;
+
+  header {
+    margin: 1rem 0 3rem;
+    text-align: center;
+
+    h1 {
+      display: inline-block;
+      margin: 0;
+
+      > span {
+        display: block;
+        padding-left: 0.5rem;
+        text-align: left;
+
+        > span {
+        }
+      }
+    }
+  }
+
+  main.login {
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+section {
+  text-align: center;
+  /* width: 500px; */
+
+  .create,
+  .join {
+    background-color: #efefef;
+    border: 1px solid rgba(0, 57, 18, 0.48);
+    border-radius: 5px;
+    // box-sizing: border-box;
+    display: inline-block;
+    padding: 0.5rem 3rem 2rem;
+  }
+
+  .create {
+    margin-right: 2rem;
+  }
+
+  form:not(.submit-message) {
+    input {
+      border: 0;
+      border-radius: 2px;
+      display: block;
+      font-size: 1.6rem;
+      margin: 0 auto 1rem;
+      padding: 1rem 1.5rem;
+      outline: none;
+
+      &[name='roomName'] {
+        margin-bottom: 2rem;
+      }
+    }
+
+    button {
+      --height: 50px;
+      border: 0;
+      /* border-radius: 20px; */
+      border-radius: calc(var(--height) * 0.5); /* 50% of height */
+      background-color: #003912;
+      color: #fefefe;
+
+      font-size: 1.7rem;
+      height: var(--height);
+      padding: 1rem 2rem;
+
+      &:hover {
+        opacity: 0.88;
+      }
+    }
+  }
+
+  &.chat {
+    display: flex;
+    // align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+}
+
+.chat-box {
+  border: 1px solid rgba(0, 57, 18, 0.48);
+  border-radius: 10px;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  height: 100%;
+  max-width: 400px;
+
+  .messages {
+    height: calc(100vh - 240px);
+    overflow-y: scroll;
+
+    ul {
+      padding: 0;
+
+      li {
+        display: flex;
+        font-size: 1.4rem;
+        list-style: none;
+        margin: 10px;
+        // padding: 10px;
+
+        &.client {
+          // margin-left: 60px;
+          text-align: right;
+          align-items: flex-start;
+          justify-content: flex-end;
+
+          > span {
+            border-top-right-radius: 0;
+          }
+        }
+
+        &.server {
+          // margin-right: 60px;
+          text-align: left;
+
+          > span {
+            border-top-left-radius: 0;
+          }
+        }
+
+        > span {
+          background-color: #333;
+          border-radius: 10px;
+          color: #fefefe;
+          display: inline-block;
+          padding: 10px;
+          width: 65%;
+
+          &.user-circle {
+            background-color: #ccc;
+            border-radius: 50%;
+            color: #333;
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: -20px;
+            height: 40px;
+            min-width: 40px;
+            width: 40px;
+            overflow: hidden;
+            padding: 0;
+            text-transform: uppercase;
+
+            &.client {
+              margin-left: 5px;
+            }
+
+            &.server {
+              margin-right: 5px;
+            }
+          }
+
+          span:not(.user-circle) {
+            background-color: #555;
+            display: inline-block;
+            padding: 1px 5px;
+            // text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  .send-text {
+    .submit-message {
+      display: flex;
+
+      > * {
+        border: 0;
+        // flex-grow: 1;
+      }
+
+      textarea {
+        background-color: rgba(0, 57, 18, 0.48);
+        border-radius: 0 0 0 10px;
+        color: rgba($color: #fefefe, $alpha: 0.95);
+        font-size: 1.6rem;
+        flex-grow: 1;
+        outline: none;
+        padding: 1rem;
+
+        &::placeholder {
+          color: rgba($color: #fefefe, $alpha: 0.4);
+        }
+      }
+
+      button {
+        background-color: #003912;
+        border-radius: 0 0 10px;
+        color: #fefefe;
+        font-size: 1.7rem;
+        padding: 3rem;
+      }
+    }
+  }
+}
