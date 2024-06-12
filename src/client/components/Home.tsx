@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Toast from './Toast';
 
 interface Message {
   text: string;
@@ -11,6 +12,8 @@ const Home = ({ user, room }: { user: string; room: string }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
   const ws = useRef<WebSocket | null>(null);
+  const [toastMessage, setToastMessage] = useState('');
+  const [isToastOpen, setIsToastOpen] = useState(false);
 
   useEffect(() => {
     // Create a WebSocket connection
@@ -19,10 +22,18 @@ const Home = ({ user, room }: { user: string; room: string }) => {
     // Set up event listeners for the WebSocket
     ws.current.onopen = () => {
       console.log('Connected to the WebSocket server');
+      setToastMessage(
+        `Connected to the WebSocket server. You are in room ${room}`
+      );
+      setIsToastOpen(true);
     };
 
     ws.current.onmessage = (event) => {
+      setToastMessage(
+        `Receving meessage from the server. Server message: ${event.data}`
+      );
       const newMessage = JSON.parse(event.data);
+      setIsToastOpen(true);
       const isCurrentUser = newMessage.username === user;
       if (!isCurrentUser) {
         setMessages((prevMessages) => [
@@ -72,6 +83,11 @@ const Home = ({ user, room }: { user: string; room: string }) => {
 
   return (
     <>
+      <Toast
+        message={toastMessage}
+        open={isToastOpen}
+        setIsToastOpen={setIsToastOpen}
+      />
       <header>
         <h1>
           WebSocket chat
