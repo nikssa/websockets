@@ -18,6 +18,7 @@ const Home = ({ user, room }: { user: string; room: string }) => {
   useEffect(() => {
     // Create a WebSocket connection
     ws.current = new WebSocket('ws://localhost:8080');
+    // ws.current = new WebSocket('wss://websockets-chat.netlify.app/');
 
     // Set up event listeners for the WebSocket
     ws.current.onopen = () => {
