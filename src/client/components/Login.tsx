@@ -1,26 +1,34 @@
-import React, { useEffect, useRef } from 'react';
+import {
+  BaseSyntheticEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef
+} from 'react';
+import { v4 as uuidv4 } from 'uuid';
 
 const Login = ({
   setUserName,
   setRoomName
 }: {
-  setUserName: React.Dispatch<React.SetStateAction<string>>;
-  setRoomName: React.Dispatch<React.SetStateAction<string>>;
+  setUserName: Dispatch<SetStateAction<string>>;
+  setRoomName: Dispatch<SetStateAction<string>>;
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     inputRef.current !== null && inputRef.current.focus();
   }, []);
 
-  const createRoom = (e: React.BaseSyntheticEvent) => {
+  const createRoom = (e: BaseSyntheticEvent) => {
     e.preventDefault();
+    const userId = uuidv4();
     const userName = e.target.username.value;
     const roomName = e.target.roomName.value;
     setUserName(userName);
     setRoomName(roomName);
   };
 
-  const joinRoom = (e: React.BaseSyntheticEvent) => {
+  const joinRoom = (e: BaseSyntheticEvent) => {
     e.preventDefault();
     const userName = e.target.username.value;
     const roomName = e.target.roomName.value;
@@ -30,7 +38,7 @@ const Login = ({
 
   return (
     <>
-      <header>
+      <header className='login'>
         <h1>Websocket chat</h1>
       </header>
 

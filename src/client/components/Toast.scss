@@ -1,0 +1,68 @@
+.toast {
+  display: none;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  flex-wrap: nowrap;
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  min-width: 300px;
+  max-width: 50%;
+  padding: 1rem 2rem;
+  z-index: 1;
+
+  @media (min-width: 768px) {
+  }
+
+  &.open {
+    display: flex;
+  }
+
+  &.info {
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    border-radius: 2rem;
+    box-shadow: 1px 1px 5px 1px rgba($color: #0c5460, $alpha: 0.1);
+    color: #0c5460;
+  }
+
+  &.success {
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 2rem;
+    box-shadow: 1px 1px 5px 1px rgba($color: #155724, $alpha: 0.1);
+    color: #155724;
+  }
+
+  &.warning {
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    border-radius: 2rem;
+    box-shadow: 1px 1px 5px 1px rgba($color: #0c5460, $alpha: 0.1);
+    color: #0c5460;
+  }
+
+  &.error {
+    background-color: #d1ecf1;
+    border: 1px solid #bee5eb;
+    border-radius: 2rem;
+    box-shadow: 1px 1px 5px 1px rgba($color: #0c5460, $alpha: 0.1);
+    color: #0c5460;
+  }
+
+  .close-btn {
+    cursor: pointer;
+    // margin: -5px -5px 0 auto;
+    padding: 1rem;
+
+    &:hover {
+      opacity: 0.68;
+    }
+  }
+
+  // p {
+  //   margin-top: -2rem;
+  //   padding-right: 3rem;
+  // }
+}

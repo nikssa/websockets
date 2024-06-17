@@ -1,26 +1,33 @@
-import React, { CSSProperties } from 'react';
+import { Dispatch, SetStateAction } from 'react';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import './Toast.scss';
 
 const Toast = ({
   message,
-  open,
+  status,
+  isOpen,
   setIsToastOpen
 }: {
   message: string;
-  open: boolean;
-  setIsToastOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  status: 'info' | 'success' | 'warning' | 'error';
+  isOpen: boolean;
+  setIsToastOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const style: CSSProperties = {
-    display: open ? 'block' : 'none',
-    position: 'fixed',
-    top: '5px',
-    left: '5px'
-  };
-  const closeToast = () => {
+  //
+  const handleClick = () => {
     setIsToastOpen(false);
   };
+
   return (
-    <div onClick={closeToast} style={style}>
-      {message}
+    <div className={`toast ${isOpen && 'open'} ${status}`}>
+      <p>{message}</p>
+      <FontAwesomeIcon
+        className='close-btn'
+        icon={faClose}
+        size='xl'
+        onClick={handleClick}
+      />
     </div>
   );
 };

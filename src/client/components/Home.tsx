@@ -1,19 +1,31 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Toast from './Toast';
+import SendMessage from './SendMessage';
+import Message from './Message';
+import Typing from './Typing';
 
-interface Message {
+export type MessageProps = {
   text: string;
   sender: 'client' | 'server';
+  // userId: string;
   username: string;
+  room: string;
+  typing: boolean;
+};
+
+interface HomeProps {
+  user: string;
   room: string;
 }
 
-const Home = ({ user, room }: { user: string; room: string }) => {
-  const [messages, setMessages] = useState<Message[]>([]);
+const Home = ({ user, room }: HomeProps) => {
+  const [messages, setMessages] = useState<MessageProps[]>([]);
   const [input, setInput] = useState<string>('');
   const ws = useRef<WebSocket | null>(null);
   const [toastMessage, setToastMessage] = useState('');
-  const [isToastOpen, setIsToastOpen] = useState(false);
+  const [isToastOpen, setIsToastOpen] = useState(true);
+
+  const [whosTyping, setWhosTyping] = useState<string[]>([]);
 
   useEffect(() => {
     // Create a WebSocket connection
@@ -24,7 +36,7 @@ const Home = ({ user, room }: { user: string; room: string }) => {
     ws.current.onopen = () => {
       console.log('Connected to the WebSocket server');
       setToastMessage(
-        `Connected to the WebSocket server. You are in room ${room}`
+        `You are in the chat room "${room}". Currently there are no user's in the chat room.`
       );
       setIsToastOpen(true);
     };
@@ -36,11 +48,21 @@ const Home = ({ user, room }: { user: string; room: string }) => {
       const newMessage = JSON.parse(event.data);
       setIsToastOpen(true);
       const isCurrentUser = newMessage.username === user;
-      if (!isCurrentUser) {
+
+      console.log('newMessage.typing', newMessage.typing);
+
+      if (!isCurrentUser && !newMessage.typing) {
         setMessages((prevMessages) => [
           ...prevMessages,
           newMessage // { text: event.data, sender: 'server', username: user, room: room }
         ]);
+        const index = whosTyping.indexOf(newMessage.username);
+        if (index > -1) {
+          whosTyping.splice(index, 1);
+        }
+        setWhosTyping(whosTyping);
+      } else if (!isCurrentUser && newMessage.typing) {
+        setWhosTyping([...whosTyping, newMessage.username]);
       }
     };
 
@@ -53,6 +75,20 @@ const Home = ({ user, room }: { user: string; room: string }) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (ws.current?.readyState && input !== '') {
+      ws.current?.send(
+        JSON.stringify({
+          text: input,
+          sender: 'client',
+          username: user,
+          room: room,
+          typing: true
+        })
+      );
+    }
+  }, [input]);
+
   const sendMessage = (e: React.BaseSyntheticEvent) => {
     e.preventDefault();
     const value = e.target.message ? e.target.message.value : e.target.value;
@@ -62,85 +98,70 @@ const Home = ({ user, room }: { user: string; room: string }) => {
           text: value,
           sender: 'client',
           username: user,
-          room: room
+          room: room,
+          typing: false
         })
       );
       setMessages((prevMessages) => [
         ...prevMessages,
-        { text: value, sender: 'client', username: user, room: room }
+        {
+          text: value,
+          sender: 'client',
+          // userId: userId,
+          username: user,
+          room: room,
+          typing: false
+        }
       ]);
       setInput('');
     }
   };
 
-  const submitFormRef = useRef<HTMLFormElement>(null);
+  console.log('messages', messages);
 
-  const onEnterPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key == 'Enter' && e.shiftKey == false) {
-      e.preventDefault();
-      sendMessage(e);
+  console.log(whosTyping);
+
+  const messagesRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messagesRef.current !== null) {
+      console.log('XXX: ', messagesRef.current.scrollHeight + 80);
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight + 80;
     }
-  };
+  }, [messages, whosTyping]);
 
   return (
     <>
       <Toast
         message={toastMessage}
-        open={isToastOpen}
+        status='info'
+        isOpen={isToastOpen}
         setIsToastOpen={setIsToastOpen}
       />
       <header>
         <h1>
-          WebSocket chat
-          <span>
-            Room: {room} | User: {user}
-          </span>
+          Chat room "{room}"<span>Online users: #</span>
         </h1>
       </header>
       <main>
         <section className='chat'>
-          {/* <h2>Messages</h2> */}
           <div className='chat-box'>
-            <div className='messages'>
+            <div className='messages' ref={messagesRef}>
               <ul>
                 {messages.map((message, index) => (
                   <li key={index} className={message.sender}>
-                    {message.sender === 'server' && (
-                      <span className='user-circle server'>
-                        {message.username.substring(0, 2)}
-                      </span>
-                    )}
-                    <span>
-                      <span>{message.username}</span>
-                      <br />
-                      {message.text}
-                    </span>
-                    {message.sender === 'client' && (
-                      <span className='user-circle client'>
-                        {message.username.substring(0, 2)}
-                      </span>
-                    )}
+                    <Message message={message} />
                   </li>
                 ))}
               </ul>
-            </div>
 
-            <div className='send-text'>
-              <form
-                className='submit-message'
-                ref={submitFormRef}
-                onSubmit={sendMessage}>
-                <textarea
-                  name='message'
-                  // type='text'
-                  onKeyDown={onEnterPress}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder='Type a message'
-                  rows={3}
-                />
-                <button type='submit'>Send</button>
-              </form>
+              {whosTyping.length > 0 && <Typing whosTyping={whosTyping} />}
+
+              <SendMessage
+                input={input}
+                setInput={setInput}
+                sendMessage={sendMessage}
+              />
             </div>
           </div>
         </section>
