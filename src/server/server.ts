@@ -10,11 +10,12 @@ const connections: { [key: string]: WebSocket } = {};
 let users: string[] = [];
 let messages: MessageProps[] = [];
 
+let firstConnection: boolean = true;
+let connectedTime: Date;
+
 const broadcast = (message: string) => {
   if (!JSON.parse(message).typing) {
-    console.log('message', message);
     messages = [...messages, JSON.parse(message)];
-    console.log('messages', messages);
   }
   Object.keys(connections).forEach((uuid) => {
     connections[uuid].send(`${message}`);
@@ -22,8 +23,11 @@ const broadcast = (message: string) => {
 };
 
 const broadcastAllMessages = (connection: WebSocket) => {
-  console.log('broadcasting all messages, messages: ', messages);
-  messages.forEach((message) => {
+  const filteredMessages = messages.filter((message) => {
+    return new Date(message.date) >= new Date(connectedTime);
+  });
+
+  filteredMessages.forEach((message) => {
     connection.send(JSON.stringify(message));
   });
 };
@@ -32,6 +36,11 @@ server.on(
   'connection',
   (socket: WebSocket /* , request: IncomingMessage */) => {
     console.log('Client connected');
+    if (firstConnection) {
+      firstConnection = false;
+      connectedTime = new Date();
+    }
+
     // const { username, room } = url.parse(request.url!, true).query;
     const uuid = uuidv4();
     connections[uuid] = socket;
@@ -45,7 +54,6 @@ server.on(
       users = users.includes(messageObj.username)
         ? users
         : [...users, messageObj.username];
-      console.log('users', users.toString());
 
       broadcast(JSON.stringify(serverMessage));
     });

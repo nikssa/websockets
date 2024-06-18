@@ -14,9 +14,11 @@ const Message = ({ message }: { message: MessageProps }) => {
 
       <span className='message-wrapper'>
         <span className='user-name'>
-          {message.sender === 'client' && 'Today 03:09 | '}
+          {message.sender === 'client' &&
+            `${new Date(message.date).toLocaleString()} | `}
           {message.username}
-          {message.sender === 'server' && ' | Today 03:09'}
+          {message.sender === 'server' &&
+            ` | ${new Date(message.date).toLocaleString()}`}
         </span>
         <span className='message'>{message.text}</span>
       </span>
