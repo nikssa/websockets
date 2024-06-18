@@ -1,8 +1,8 @@
 import WebSocket, { WebSocketServer } from 'ws';
 // import { IncomingMessage } from 'http';
+// import url from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageProps } from '../client/components/Home';
-// import url from 'url';
 
 const server = new WebSocketServer({ port: 8080 });
 
@@ -12,12 +12,10 @@ let messages: MessageProps[] = [];
 
 const broadcast = (message: string) => {
   if (!JSON.parse(message).typing) {
+    console.log('message', message);
     messages = [...messages, JSON.parse(message)];
+    console.log('messages', messages);
   }
-
-  // const messageObject = JSON.parse(message);
-  // if (messageObject.typing) {
-  // }
   Object.keys(connections).forEach((uuid) => {
     connections[uuid].send(`${message}`);
   });
@@ -34,27 +32,13 @@ server.on(
   'connection',
   (socket: WebSocket /* , request: IncomingMessage */) => {
     console.log('Client connected');
-
     // const { username, room } = url.parse(request.url!, true).query;
     const uuid = uuidv4();
     connections[uuid] = socket;
-    // users[uuid] = {
-    //   username: username,
-    // };
 
     broadcastAllMessages(socket);
 
     socket.on('message', (message) => {
-      // console.log('message', message.toString());
-
-      // console.log(
-      //   `server sending message, ${JSON.parse(message.toString()).text}: `,
-      //   JSON.parse(message.toString()).text
-      // );
-      // console.log('message typing: ', JSON.parse(message.toString()).typing);
-
-      // Echo the received message back to the client
-      // socket.send(`Server message: ${message}`);
       const messageObj = JSON.parse(message.toString());
       const serverMessage = { ...messageObj, sender: 'server' };
 
@@ -63,13 +47,10 @@ server.on(
         : [...users, messageObj.username];
       console.log('users', users.toString());
 
-      // if (JSON.parse(message.toString()).typing) {
-      // }
       broadcast(JSON.stringify(serverMessage));
     });
 
     socket.on('close', () => {
-      messages = [];
       console.log('Client disconnected');
     });
   }

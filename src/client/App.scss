@@ -7,7 +7,6 @@
 
   header {
     margin: 1rem 0 3rem;
-    // text-align: center;
 
     &.login {
       text-align: center;
@@ -107,9 +106,7 @@ section {
 
   &.chat {
     display: flex;
-    // justify-content: center;
     height: 100%;
-    // width: 100%;
   }
 }
 
@@ -122,7 +119,7 @@ section {
   height: 100%;
   max-width: 800px;
   width: 100%;
-  padding: 2rem 2rem 9rem;
+  padding: 2rem 2rem 11rem;
   position: relative;
 
   @media (min-width: 768px) {
@@ -144,7 +141,6 @@ section {
 
       > * {
         border: 0;
-        // flex-grow: 1;
       }
 
       textarea {
@@ -170,10 +166,6 @@ section {
         width: var(--height);
         margin: 1rem;
         padding: 2rem 1rem;
-
-        // @media (min-width: 768px) {
-        //   padding: 2rem 3rem;
-        // }
 
         &:hover {
           opacity: 0.88;

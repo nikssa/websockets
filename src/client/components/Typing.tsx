@@ -1,6 +1,6 @@
 import './Typing.scss';
 
-const Typing = ({ whosTyping }: { whosTyping: string[] }) => {
+const Typing = ({ whoIsTyping }: { whoIsTyping: string[] }) => {
   return (
     <div className='typing'>
       <svg height='20' width='40' className='loader'>
@@ -26,7 +26,7 @@ const Typing = ({ whosTyping }: { whosTyping: string[] }) => {
           style={{ fill: 'grey' }}
         />
       </svg>
-      <span className='text'>{whosTyping.toString()} typing</span>
+      <span className='text'>{whoIsTyping.toString()} typing</span>
     </div>
   );
 };

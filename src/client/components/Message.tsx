@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { MessageProps } from './Home';
 import './Message.scss';
-import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 const Message = ({ message }: { message: MessageProps }) => {
   return (

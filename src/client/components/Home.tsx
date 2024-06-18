@@ -7,7 +7,6 @@ import Typing from './Typing';
 export type MessageProps = {
   text: string;
   sender: 'client' | 'server';
-  // userId: string;
   username: string;
   room: string;
   roomUsers: string[];
@@ -26,34 +25,22 @@ const Home = ({ user, room }: HomeProps) => {
   const [toastMessage, setToastMessage] = useState('');
   const [isToastOpen, setIsToastOpen] = useState(true);
 
-  const [whosTyping, setWhosTyping] = useState<string[]>([]);
+  const [whoIsTyping, setWhoIsTyping] = useState<string[]>([]);
 
   const [users, setUsers] = useState<string[]>([]);
 
   useEffect(() => {
     // Create a WebSocket connection
     ws.current = new WebSocket('ws://localhost:8080');
-    // ws.current = new WebSocket('wss://websockets-chat.netlify.app/');
 
     // Set up event listeners for the WebSocket
     ws.current.onopen = () => {
       console.log('Connected to the WebSocket server');
-      setToastMessage(
-        `You are in the chat room "${room}". Currently there are ${
-          users.length > 0
-            ? `${users.length} users in the room.`
-            : "no user's in the chat room."
-        } `
-      );
+      setToastMessage(`You are in the chat room "${room}".`);
       setIsToastOpen(true);
     };
 
     ws.current.onmessage = (event) => {
-      // setToastMessage(
-      //   `Receving meessage from the server. Server message: ${event.data}`
-      // );
-      // setIsToastOpen(true);
-
       const newMessage = JSON.parse(event.data);
       const isCurrentUser = newMessage.username === user;
       setUsers(newMessage.roomUsers);
@@ -61,15 +48,15 @@ const Home = ({ user, room }: HomeProps) => {
       if (!isCurrentUser && !newMessage.typing) {
         setMessages((prevMessages) => [
           ...prevMessages,
-          newMessage // { text: event.data, sender: 'server', username: user, room: room }
+          newMessage // { text: event.data, sender: 'server', username: user, room: room, roomUsers: users, typing: false }
         ]);
-        const index = whosTyping.indexOf(newMessage.username);
+        const index = whoIsTyping.indexOf(newMessage.username);
         if (index > -1) {
-          whosTyping.splice(index, 1);
+          whoIsTyping.splice(index, 1);
         }
-        setWhosTyping(whosTyping);
+        setWhoIsTyping(whoIsTyping);
       } else if (!isCurrentUser && newMessage.typing) {
-        setWhosTyping([...whosTyping, newMessage.username]);
+        setWhoIsTyping([...whoIsTyping, newMessage.username]);
       }
     };
 
@@ -116,7 +103,6 @@ const Home = ({ user, room }: HomeProps) => {
         {
           text: value,
           sender: 'client',
-          // userId: userId,
           username: user,
           room: room,
           roomUsers: users.includes(user) ? users : [...users, user],
@@ -127,16 +113,13 @@ const Home = ({ user, room }: HomeProps) => {
     }
   };
 
-  // console.log('messages', messages);
-  // console.log('whosTyping', whosTyping);
-
   const messagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (messagesRef.current !== null) {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight + 90;
     }
-  }, [messages, whosTyping]);
+  }, [messages, whoIsTyping]);
 
   return (
     <>
@@ -148,7 +131,10 @@ const Home = ({ user, room }: HomeProps) => {
       />
       <header>
         <h1>
-          Chat room "{room}"<span>Online users: {users.toString()}</span>
+          Chat room "{room}"
+          <span>
+            Online users: {users.filter((u) => u !== user).toString()}
+          </span>
         </h1>
       </header>
       <main className='chat'>
@@ -163,7 +149,7 @@ const Home = ({ user, room }: HomeProps) => {
                 ))}
               </ul>
 
-              {whosTyping.length > 0 && <Typing whosTyping={whosTyping} />}
+              {whoIsTyping.length > 0 && <Typing whoIsTyping={whoIsTyping} />}
 
               <SendMessage
                 input={input}

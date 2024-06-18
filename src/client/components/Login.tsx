@@ -5,7 +5,6 @@ import {
   useEffect,
   useRef
 } from 'react';
-// import { v4 as uuidv4 } from 'uuid';
 
 const Login = ({
   setUserName,
@@ -21,7 +20,6 @@ const Login = ({
 
   const createRoom = (e: BaseSyntheticEvent) => {
     e.preventDefault();
-    // const userId = uuidv4();
     const userName = e.target.username.value;
     const roomName = e.target.roomName.value;
     setUserName(userName);
