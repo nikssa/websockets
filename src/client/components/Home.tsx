@@ -10,6 +10,7 @@ export type MessageProps = {
   // userId: string;
   username: string;
   room: string;
+  roomUsers: string[];
   typing: boolean;
 };
 
@@ -27,6 +28,8 @@ const Home = ({ user, room }: HomeProps) => {
 
   const [whosTyping, setWhosTyping] = useState<string[]>([]);
 
+  const [users, setUsers] = useState<string[]>([]);
+
   useEffect(() => {
     // Create a WebSocket connection
     ws.current = new WebSocket('ws://localhost:8080');
@@ -36,20 +39,24 @@ const Home = ({ user, room }: HomeProps) => {
     ws.current.onopen = () => {
       console.log('Connected to the WebSocket server');
       setToastMessage(
-        `You are in the chat room "${room}". Currently there are no user's in the chat room.`
+        `You are in the chat room "${room}". Currently there are ${
+          users.length > 0
+            ? `${users.length} users in the room.`
+            : "no user's in the chat room."
+        } `
       );
       setIsToastOpen(true);
     };
 
     ws.current.onmessage = (event) => {
-      setToastMessage(
-        `Receving meessage from the server. Server message: ${event.data}`
-      );
-      const newMessage = JSON.parse(event.data);
-      setIsToastOpen(true);
-      const isCurrentUser = newMessage.username === user;
+      // setToastMessage(
+      //   `Receving meessage from the server. Server message: ${event.data}`
+      // );
+      // setIsToastOpen(true);
 
-      console.log('newMessage.typing', newMessage.typing);
+      const newMessage = JSON.parse(event.data);
+      const isCurrentUser = newMessage.username === user;
+      setUsers(newMessage.roomUsers);
 
       if (!isCurrentUser && !newMessage.typing) {
         setMessages((prevMessages) => [
@@ -83,6 +90,7 @@ const Home = ({ user, room }: HomeProps) => {
           sender: 'client',
           username: user,
           room: room,
+          roomUsers: users.includes(user) ? users : [...users, user],
           typing: true
         })
       );
@@ -99,6 +107,7 @@ const Home = ({ user, room }: HomeProps) => {
           sender: 'client',
           username: user,
           room: room,
+          roomUsers: users.includes(user) ? users : [...users, user],
           typing: false
         })
       );
@@ -110,6 +119,7 @@ const Home = ({ user, room }: HomeProps) => {
           // userId: userId,
           username: user,
           room: room,
+          roomUsers: users.includes(user) ? users : [...users, user],
           typing: false
         }
       ]);
@@ -117,16 +127,14 @@ const Home = ({ user, room }: HomeProps) => {
     }
   };
 
-  console.log('messages', messages);
-
-  console.log(whosTyping);
+  // console.log('messages', messages);
+  // console.log('whosTyping', whosTyping);
 
   const messagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (messagesRef.current !== null) {
-      console.log('XXX: ', messagesRef.current.scrollHeight + 80);
-      messagesRef.current.scrollTop = messagesRef.current.scrollHeight + 80;
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight + 90;
     }
   }, [messages, whosTyping]);
 
@@ -140,7 +148,7 @@ const Home = ({ user, room }: HomeProps) => {
       />
       <header>
         <h1>
-          Chat room "{room}"<span>Online users: #</span>
+          Chat room "{room}"<span>Online users: {users.toString()}</span>
         </h1>
       </header>
       <main>

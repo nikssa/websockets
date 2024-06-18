@@ -7,7 +7,7 @@ import { MessageProps } from '../client/components/Home';
 const server = new WebSocketServer({ port: 8080 });
 
 const connections: { [key: string]: WebSocket } = {};
-// const users = {};
+let users: string[] = [];
 let messages: MessageProps[] = [];
 
 const broadcast = (message: string) => {
@@ -40,24 +40,29 @@ server.on(
     connections[uuid] = socket;
     // users[uuid] = {
     //   username: username,
-    //   room: room
     // };
 
     broadcastAllMessages(socket);
 
     socket.on('message', (message) => {
-      console.log(
-        `server sending message, ${JSON.parse(message.toString()).text}: `,
-        JSON.parse(message.toString()).text
-      );
-      console.log('message typing: ', JSON.parse(message.toString()).typing);
+      // console.log('message', message.toString());
+
+      // console.log(
+      //   `server sending message, ${JSON.parse(message.toString()).text}: `,
+      //   JSON.parse(message.toString()).text
+      // );
+      // console.log('message typing: ', JSON.parse(message.toString()).typing);
+
       // Echo the received message back to the client
       // socket.send(`Server message: ${message}`);
       const messageObj = JSON.parse(message.toString());
       const serverMessage = { ...messageObj, sender: 'server' };
 
-      if (JSON.parse(message.toString()).typing) {
-      }
+      users = [...users, messageObj.username];
+      console.log('users', users.toString());
+
+      // if (JSON.parse(message.toString()).typing) {
+      // }
       broadcast(JSON.stringify(serverMessage));
     });
 
