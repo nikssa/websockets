@@ -58,7 +58,9 @@ server.on(
       const messageObj = JSON.parse(message.toString());
       const serverMessage = { ...messageObj, sender: 'server' };
 
-      users = [...users, messageObj.username];
+      users = users.includes(messageObj.username)
+        ? users
+        : [...users, messageObj.username];
       console.log('users', users.toString());
 
       // if (JSON.parse(message.toString()).typing) {

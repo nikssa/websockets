@@ -151,7 +151,7 @@ const Home = ({ user, room }: HomeProps) => {
           Chat room "{room}"<span>Online users: {users.toString()}</span>
         </h1>
       </header>
-      <main>
+      <main className='chat'>
         <section className='chat'>
           <div className='chat-box'>
             <div className='messages' ref={messagesRef}>
