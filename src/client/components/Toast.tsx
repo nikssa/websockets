@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Toast.scss';
@@ -18,6 +18,10 @@ const Toast = ({
   const handleClick = () => {
     setIsToastOpen(false);
   };
+
+  useEffect(() => {
+    setTimeout(() => setIsToastOpen(false), 10000);
+  }, []);
 
   return (
     <div className={`toast ${isOpen && 'open'} ${status}`}>
