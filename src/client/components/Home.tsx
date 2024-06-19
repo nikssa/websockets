@@ -127,7 +127,7 @@ const Home = ({ user, room }: HomeProps) => {
       currentMessage.typing &&
       !whoIsTyping.includes(currentMessage.username)
     ) {
-      console.log('current message typing', currentMessage.typing);
+      // console.log('current message typing', currentMessage.typing);
       setWhoIsTyping([...whoIsTyping, currentMessage.username]);
     } else if (
       !isCurrentUser &&
