@@ -127,7 +127,6 @@ const Home = ({ user, room }: HomeProps) => {
       currentMessage.typing &&
       !whoIsTyping.includes(currentMessage.username)
     ) {
-      // console.log('current message typing', currentMessage.typing);
       setWhoIsTyping([...whoIsTyping, currentMessage.username]);
     } else if (
       !isCurrentUser &&
@@ -147,9 +146,6 @@ const Home = ({ user, room }: HomeProps) => {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight + 90;
     }
   }, [messages]);
-
-  // console.log('messages', messages);
-  console.log('whoIsTyping root', whoIsTyping);
 
   return (
     <>
